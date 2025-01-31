@@ -48,5 +48,20 @@ struct ApiService {
         let (data, response) = try await session.data(for: request)
         return try JSONDecoder().decode(T.self, from: data)
     }
+    
+    func getCredits<T: Decodable>(type: T.Type, endpoint: String) async throws -> T {
+        let fullURLString = "\(baseUrl)\(endpoint)?api_key=\(apiKey)"
+
+        guard let url = URL(string: fullURLString) else {
+            throw AppError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let (data, response) = try await session.data(for: request)
+        return try JSONDecoder().decode(T.self, from: data)
+    }
 
 }

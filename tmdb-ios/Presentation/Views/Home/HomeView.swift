@@ -10,6 +10,10 @@ import Kingfisher
 
 struct HomeView : View{
     @StateObject var viewModel : HomeViewModel = .init()
+    @StateObject var movieDetailsViewModel: MovieDetailsViewModel = .init()
+    
+    @State private var isPresentingDetails = false
+    @State var _details: MovieDetails? = nil
     
     var body : some View{
         VStack{
@@ -20,23 +24,48 @@ struct HomeView : View{
                     MoviesSection(
                         title: "Today Trending",
                         movies: viewModel.trendingTodayMovies
-                    )
+                    ) { details in
+                        self._details = details
+                        movieDetailsViewModel.getDetails(movieId: details.id)
+                        self.isPresentingDetails = true
+                    }
+                    
                     MoviesSection(
                         title: "Popular",
                         movies: viewModel.popularMovies
-                    )
+                    ){ details in
+                        _details = details
+                        movieDetailsViewModel.getDetails(movieId: details.id)
+                        self.isPresentingDetails = true
+                    }
+                    
                     MoviesSection(
                         title: "Upcoming",
                         movies: viewModel.upcomingMovies
-                    )
+                    ){ details in
+                        _details = details
+                        movieDetailsViewModel.getDetails(movieId: details.id)
+                        self.isPresentingDetails = true
+                    }
+                    
                     MoviesSection(
                         title: "Now Playing",
                         movies: viewModel.nowPlayingMovies
-                    )
+                    ){ details in
+                        _details = details
+                        movieDetailsViewModel.getDetails(movieId: details.id)
+                        self.isPresentingDetails = true
+                    }
+                    
                     MoviesSection(
                         title: "Top Rated",
                         movies: viewModel.topRatedMovies
-                    )
+                    ){ details in
+                        _details = details
+                        movieDetailsViewModel.getDetails(movieId: details.id)
+                        self.isPresentingDetails = true
+                    }
+                    
                     Spacer()
                 }
             }
@@ -50,6 +79,16 @@ struct HomeView : View{
         }, message: {
             Text(viewModel.errorMessage)
         })
+        .sheet(item: $_details, content: { details in
+            MovieDetailsView(
+                args: details,
+                onEvent: {movieDetailsEvent in
+                },
+                viewModel:movieDetailsViewModel
+            )
+        })
+       
+
     }
 }
 
@@ -70,6 +109,7 @@ struct HeaderSection : View{
 struct MoviesSection: View {
     let title: String
     let movies: [MovieModel]
+    let onTap: (MovieDetails) -> Void
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -89,6 +129,15 @@ struct MoviesSection: View {
                                 .frame(width: 100, height: 150)
                                 .cornerRadius(8)
                                 .clipped()
+                                .onTapGesture {
+                                    onTap(
+                                        MovieDetails(
+                                            id: movie.id,
+                                            name: movie.originalTitle,
+                                            posterPath: movie.posterPath
+                                        )
+                                    )
+                                }
 
                         }
                         .padding(.vertical, 0)

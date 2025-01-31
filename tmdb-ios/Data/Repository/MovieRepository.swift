@@ -13,6 +13,7 @@ protocol MovieRepositoryProvider {
     func getUpcomingMovies() async throws -> [MovieModel]
     func getTopRatedMovies() async throws -> [MovieModel]
     func getNowPlayingMovies() async throws -> [MovieModel]
+    func getMovieDetails(movieId: Int) async throws -> MovieDetailsModel
 }
 
 class MovieRepository : MovieRepositoryProvider {
@@ -65,6 +66,44 @@ class MovieRepository : MovieRepositoryProvider {
         )
         
         return response.results.map { $0.toMovieModel() }
+    }
+    
+    func getMovieDetails(movieId: Int) async throws -> MovieDetailsModel{
+        
+        let response = try await self.apiService.getData(
+            type: MovieDetailsResponse.self,
+            endpoint: "/movie/\(movieId)"
+        )
+        
+        
+        let cast: [CastResponse]
+        do {
+            let response = try await self.apiService.getCredits(
+                type: CreditsResponse.self,
+                endpoint: "movie/\(movieId)/credits"
+            )
+            cast = response.cast // Successfully fetched, assign the cast
+        } catch {
+            // Handle the error and assign an empty array if an error occurs
+            print("Failed to fetch credits: \(error.localizedDescription)")
+            cast = [] // Return an empty array on error
+        }
+
+        let recommendations: [MovieResponse]
+        do {
+            let response = try await self.apiService.getData(
+                type: MoviesResponse.self,
+                endpoint: "movie/\(movieId)/recommendations"
+            )
+            recommendations =  response.results
+        } catch {
+            // Handle the error here
+            print("Failed to fetch recommendations: \(error.localizedDescription)")
+            recommendations = []
+        }
+
+        
+        return response.toMovieDetailsModel(cast: cast, recommendations: recommendations)
     }
 }
 
