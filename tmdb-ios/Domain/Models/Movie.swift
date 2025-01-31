@@ -7,8 +7,6 @@
 
 import Foundation
 
-import Foundation
-
 public struct Movie: Identifiable, Codable {
     public let id: Int
     public let title: String

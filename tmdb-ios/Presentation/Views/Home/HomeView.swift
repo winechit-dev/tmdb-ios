@@ -9,21 +9,47 @@ import SwiftUI
 import Kingfisher
 
 struct HomeView : View{
+    @StateObject var viewModel : HomeViewModel = .init()
+    
     var body : some View{
         VStack{
             HeaderSection().padding()
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0){
                 
-                    MoviesSection(title: "Today Trending",movies: moviesPreview)
-                    MoviesSection(title: "Popular",movies: moviesPreview)
-                    MoviesSection(title: "Upcoming",movies: moviesPreview)
-                    MoviesSection(title: "Now Playing",movies: moviesPreview)
-                    MoviesSection(title: "Top Rated",movies: moviesPreview)
+                    MoviesSection(
+                        title: "Today Trending",
+                        movies: viewModel.trendingTodayMovies
+                    )
+                    MoviesSection(
+                        title: "Popular",
+                        movies: viewModel.popularMovies
+                    )
+                    MoviesSection(
+                        title: "Upcoming",
+                        movies: viewModel.upcomingMovies
+                    )
+                    MoviesSection(
+                        title: "Now Playing",
+                        movies: viewModel.nowPlayingMovies
+                    )
+                    MoviesSection(
+                        title: "Top Rated",
+                        movies: viewModel.topRatedMovies
+                    )
                     Spacer()
                 }
             }
-        }.frame(width: .infinity,height: .infinity)
+        }.alert("Error", isPresented: .constant(!viewModel.errorMessage.isEmpty), actions: {
+            Button {
+                
+            } label: {
+                Text("Ok")
+            }
+
+        }, message: {
+            Text(viewModel.errorMessage)
+        })
     }
 }
 
@@ -43,7 +69,7 @@ struct HeaderSection : View{
 
 struct MoviesSection: View {
     let title: String
-    let movies: [Movie]
+    let movies: [MovieModel]
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -57,20 +83,13 @@ struct MoviesSection: View {
                 HStack(spacing: 10) { // Ensure space between images
                     ForEach(movies) { movie in
                         VStack {
-                            if let posterPath = movie.posterPath, !posterPath.isEmpty {
-                               let url = URL(string: "https://image.tmdb.org/t/p/w200\(posterPath)")
-                                KFImage(url)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 100, height: 150)
-                                    .cornerRadius(8)
-                                    .clipped()
-                            } else {
-                                RoundedRectangle(cornerSize: CGSize(width: 20, height: 20))
-                                    .fill(Color.gray.opacity(0.4))
-                                    .frame(width: 100, height: 150)
-                                
-                            }
+                            KFImage(URL(string:movie.posterPath))
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 100, height: 150)
+                                .cornerRadius(8)
+                                .clipped()
+
                         }
                         .padding(.vertical, 0)
                     }
