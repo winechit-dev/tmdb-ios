@@ -106,13 +106,3 @@ struct MoviesSection: View {
     HomeView()
 }
 
-
-
-let moviesPreview: [Movie] = [
-    Movie(id: 1, title: "", overview: "", posterPath: ""),
-    Movie(id: 2, title: "", overview: "", posterPath: ""),
-    Movie(id: 3, title: "", overview: "", posterPath: ""),
-    Movie(id: 4, title: "", overview: "", posterPath: "")
-]
-
-
