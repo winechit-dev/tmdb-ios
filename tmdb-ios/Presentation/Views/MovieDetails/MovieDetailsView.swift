@@ -7,6 +7,7 @@
 
 
 import SwiftUI
+import SwiftData
 
 struct MovieDetails: Identifiable {
     let id: Int
@@ -29,12 +30,15 @@ struct MovieDetailsView: View {
 struct MovieDetailsContent: View {
     let args: MovieDetails
     let uiState: MovieDetailsUIState
+    @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) private var dismiss
 
     
     var body: some View {
         ScrollView {
             ZStack(alignment: .top) {
                 posterSection
+                toolbarSection
                 VStack(spacing: 0) {
                     headSection
                     overviewSection
@@ -44,23 +48,61 @@ struct MovieDetailsContent: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top,350)
+                
             }
         }
+        .navigationBarHidden(true)
+        .edgesIgnoringSafeArea(.top)
     }
     
+    private var toolbarSection : some View{
+        HStack {
+            Button(action: {
+                dismiss()
+            }) {
+                Image(systemName: "chevron.left")
+                    .foregroundColor(.black)
+                    .padding(12)
+                    .background(
+                        Circle()
+                            .fill(.white.opacity(0.5))
+                    )
+            }
+            
+            Spacer()
+            
+            Button(action: {
+                modelContext.insert(
+                    FavoriteMovie(
+                        movieId: args.id,
+                        posterPath: args.posterPath,
+                        originalTitle: args.name
+                    )
+                )
+            }) {
+                Image(systemName: "heart")
+                    .foregroundColor(.black)
+                    .padding(12)
+                    .background(
+                        Circle()
+                            .fill(.white.opacity(0.5))
+                    )
+            }
+        }
+        .padding(.horizontal)
+        .padding(.top, 60)
+    }
     private var posterSection : some View{
         ZStack(alignment: .bottom) {
             AsyncImage(url: URL(string: args.posterPath)) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .cornerRadius(8)
                     .frame(maxWidth: .infinity)
                 
             } placeholder: {
                 Color.gray.opacity(0.5)
             }
-            .padding(10)
             .overlay {
                 LinearGradient(
                     gradient: Gradient(
