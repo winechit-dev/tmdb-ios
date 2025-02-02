@@ -25,7 +25,7 @@ struct ContentView: View {
                         .font(.custom("Metropolis-Regular", size:12))
                 
                 }
-                Text("Favorites").font(.largeTitle).tabItem {
+                FavouriteMoviesView().tabItem {
                     Image(systemName: "heart")
                         .resizable()
                         .renderingMode(.template)

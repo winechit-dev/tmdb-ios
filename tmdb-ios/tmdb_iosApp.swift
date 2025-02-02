@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct tmdb_iosApp: App {
@@ -13,5 +14,6 @@ struct tmdb_iosApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: FavoriteMovie.self)
     }
 }

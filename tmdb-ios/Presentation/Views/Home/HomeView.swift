@@ -12,7 +12,7 @@ struct HomeView : View{
     @StateObject var viewModel : HomeViewModel = .init()
     
     var body : some View{
-        NavigationView{
+        NavigationView {
             VStack(alignment: .leading){
                 headerSection
                 ScrollView(.vertical, showsIndicators: false) {
@@ -79,50 +79,53 @@ struct MoviesSection: View {
     let movies: [MovieModel]
     
     var body: some View {
-            VStack(alignment: .leading) {
-                Text(title)
-                    .font(.titleMedium)
-                    .bold()
-                    .padding(.leading)
-                    .padding(.bottom,6)
-                
-                
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(movies) { movie in
-                            NavigationLink(
-                                destination:createDetailView(for: movie)
-                            ) {
-                                VStack {
-                                    KFImage(URL(string:movie.posterPath))
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(width: 100, height: 150)
-                                        .cornerRadius(8)
-                                        .clipped()
-                                }
-                                .padding(.vertical, 0)
+        VStack(alignment: .leading) {
+            Text(title)
+                .font(.titleMedium)
+                .bold()
+                .padding(.leading)
+                .padding(.bottom,6)
+            
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(movies) { movie in
+                        NavigationLink(
+                            destination:createDetailView(
+                                for: MovieDetails(
+                                    id: movie.id,
+                                    name: movie.originalTitle,
+                                    posterPath: movie.posterPath
+                                )
+                            )
+                        ) {
+                            VStack {
+                                KFImage(URL(string:movie.posterPath))
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 100, height: 150)
+                                    .cornerRadius(8)
+                                    .clipped()
                             }
+                            .padding(.vertical, 0)
                         }
                     }
-                    .padding(.horizontal)
-                    
-                }.padding(.horizontal,0)
-            }
-            .padding(.vertical, 16)
+                }
+                .padding(.horizontal)
+                
+            }.padding(.horizontal,0)
         }
-    
-    @ViewBuilder
-    private func createDetailView(for movie: MovieModel) -> some View {
-        MovieDetailsView(
-            args: MovieDetails(
-                id: movie.id,
-                name: movie.originalTitle,
-                posterPath: movie.posterPath
-            ),
-            viewModel:MovieDetailsViewModel(movieId: movie.id)
-        )
+        .padding(.vertical, 16)
     }
+    
+}
+
+@ViewBuilder
+func createDetailView(for movie: MovieDetails) -> some View {
+    MovieDetailsView(
+        args: movie,
+        viewModel:MovieDetailsViewModel(movieId: movie.id)
+    )
 }
 
 #Preview {

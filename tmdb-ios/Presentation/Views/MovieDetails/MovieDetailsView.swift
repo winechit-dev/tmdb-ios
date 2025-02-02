@@ -72,6 +72,7 @@ struct MovieDetailsContent: View {
             Spacer()
             
             Button(action: {
+               
                 modelContext.insert(
                     FavoriteMovie(
                         movieId: args.id,
