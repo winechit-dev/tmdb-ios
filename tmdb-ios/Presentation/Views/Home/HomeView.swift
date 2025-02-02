@@ -11,13 +11,11 @@ import Kingfisher
 struct HomeView : View{
     @StateObject var viewModel : HomeViewModel = .init()
     @StateObject var movieDetailsViewModel: MovieDetailsViewModel = .init()
-    
-    @State private var isPresentingDetails = false
-    @State var _details: MovieDetails? = nil
+        @State var _details: MovieDetails? = nil
     
     var body : some View{
-        VStack{
-            HeaderSection().padding()
+        VStack(alignment: .leading){
+            headerSection
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0){
                 
@@ -27,7 +25,6 @@ struct HomeView : View{
                     ) { details in
                         self._details = details
                         movieDetailsViewModel.getDetails(movieId: details.id)
-                        self.isPresentingDetails = true
                     }
                     
                     MoviesSection(
@@ -36,7 +33,6 @@ struct HomeView : View{
                     ){ details in
                         _details = details
                         movieDetailsViewModel.getDetails(movieId: details.id)
-                        self.isPresentingDetails = true
                     }
                     
                     MoviesSection(
@@ -45,7 +41,6 @@ struct HomeView : View{
                     ){ details in
                         _details = details
                         movieDetailsViewModel.getDetails(movieId: details.id)
-                        self.isPresentingDetails = true
                     }
                     
                     MoviesSection(
@@ -54,7 +49,6 @@ struct HomeView : View{
                     ){ details in
                         _details = details
                         movieDetailsViewModel.getDetails(movieId: details.id)
-                        self.isPresentingDetails = true
                     }
                     
                     MoviesSection(
@@ -63,7 +57,6 @@ struct HomeView : View{
                     ){ details in
                         _details = details
                         movieDetailsViewModel.getDetails(movieId: details.id)
-                        self.isPresentingDetails = true
                     }
                     
                     Spacer()
@@ -82,29 +75,44 @@ struct HomeView : View{
         .sheet(item: $_details, content: { details in
             MovieDetailsView(
                 args: details,
-                onEvent: {movieDetailsEvent in
+                onEvent: {event in
+                   
+                        switch event {
+                        case .navigateUp:
+                            _details = nil
+                            
+                        case .movieDetails(let movie):
+                            _details = MovieDetails(
+                                id: movie.id,
+                                name: movie.name,
+                                posterPath: movie.posterPath
+                            )
+                            movieDetailsViewModel.getDetails(movieId: movie.id)
+                            
+                            
+                        default:
+                            break
+                        }
+                    
                 },
                 viewModel:movieDetailsViewModel
             )
         })
-       
-
     }
-}
-
-struct HeaderSection : View{
-    var body: some View{
-        VStack(alignment: .leading, spacing: 0){
-            Text("Welcome")
-                .font(.custom("Metropolis-SemiBold", size:28))
     
+    var headerSection : some View{
+        VStack(alignment: .leading, spacing: 6){
+            Text("Welcome")
+                .font(.headlineMedium)
+               
             Text("Millions of movies, TV shows and people to discover. Explore now.")
-                .font(.custom("Metropolis-Regular", size:14))
-                .padding(.top,6)
-        }
-        
+                .font(.titleSmall)
+                
+            
+        }.padding(.horizontal)
     }
 }
+
 
 struct MoviesSection: View {
     let title: String
@@ -114,7 +122,8 @@ struct MoviesSection: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(title)
-                .font(.custom("Metropolis-SemiBold", size: 16))
+                .font(.titleMedium)
+                .bold()
                 .padding(.leading) // Add padding for title alignment
                 .padding(.bottom,6)
             

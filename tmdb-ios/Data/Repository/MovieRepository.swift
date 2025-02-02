@@ -68,40 +68,21 @@ class MovieRepository : MovieRepositoryProvider {
         return response.results.map { $0.toMovieModel() }
     }
     
-    func getMovieDetails(movieId: Int) async throws -> MovieDetailsModel{
-        
+    func getMovieDetails(movieId: Int) async throws -> MovieDetailsModel {
         let response = try await self.apiService.getData(
             type: MovieDetailsResponse.self,
             endpoint: "/movie/\(movieId)"
         )
         
-        
-        let cast: [CastResponse]
-        do {
-            let response = try await self.apiService.getCredits(
-                type: CreditsResponse.self,
-                endpoint: "movie/\(movieId)/credits"
-            )
-            cast = response.cast // Successfully fetched, assign the cast
-        } catch {
-            // Handle the error and assign an empty array if an error occurs
-            print("Failed to fetch credits: \(error.localizedDescription)")
-            cast = [] // Return an empty array on error
-        }
+        let cast = try await self.apiService.getCredits(
+            type: CreditsResponse.self,
+            endpoint: "/movie/\(movieId)/credits"
+        ).cast
 
-        let recommendations: [MovieResponse]
-        do {
-            let response = try await self.apiService.getData(
-                type: MoviesResponse.self,
-                endpoint: "movie/\(movieId)/recommendations"
-            )
-            recommendations =  response.results
-        } catch {
-            // Handle the error here
-            print("Failed to fetch recommendations: \(error.localizedDescription)")
-            recommendations = []
-        }
-
+        let recommendations = try await self.apiService.getData(
+            type: MoviesResponse.self,
+            endpoint: "/movie/\(movieId)/recommendations"
+        ).results
         
         return response.toMovieDetailsModel(cast: cast, recommendations: recommendations)
     }

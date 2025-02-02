@@ -47,16 +47,14 @@ struct MovieDetailsContent: View {
                 VStack(spacing: 0) {
                     headSection
                     overviewSection
-                    castSection
                     categoriesSection
+                    castSection
                     recommendationsSection
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top,350)
                
             }
-            
-            
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(
@@ -90,12 +88,13 @@ struct MovieDetailsContent: View {
                     .frame(maxWidth: .infinity)
                 
             } placeholder: {
-                Color.gray
+                Color.gray.opacity(0.5)
             }
             .padding(0)
             .overlay {
                 LinearGradient(
-                    gradient: Gradient(colors: [.clear, .white.opacity(0.1),.white]),
+                    gradient: Gradient(
+                    colors: [.clear,.clear,.white.opacity(0.1),.white,.white]),
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -108,14 +107,14 @@ struct MovieDetailsContent: View {
             HStack() {
                 VoteAverageView(progress: uiState.details?.voteAverage)
                 
-                VStack(alignment: .leading,spacing: 6) {
+                VStack(alignment: .leading,spacing: 2) {
                     Text(args.name)
-                        .font(.title)
+                        .font(.titleLarge)
                         .fontWeight(.bold)
                     
                     if let releaseDate = uiState.details?.releaseDate {
                         Text(releaseDate)
-                            .font(.body)
+                            .font(.bodyLarge)
                     } else {
                         Rectangle()
                             .fill(Color.gray.opacity(0.3))
@@ -131,6 +130,7 @@ struct MovieDetailsContent: View {
         Group {
             if let overview = uiState.details?.overview, !overview.isEmpty {
                 Text(overview)
+                    .font(.bodyMedium)
                     .padding()
                 
                 if uiState.details?.video == true {
@@ -145,6 +145,8 @@ struct MovieDetailsContent: View {
                         .foregroundColor(.white)
                         .cornerRadius(10)
                     }
+                    .padding(.horizontal)
+                    .padding(.bottom)
                 }
             }
         }
@@ -153,32 +155,37 @@ struct MovieDetailsContent: View {
     private var castSection: some View {
         Group {
             if let cast = uiState.details?.cast, !cast.isEmpty {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading,spacing: 4) {
                     Text("Cast")
                         .font(.headline)
-                        .padding()
+                        .padding(.horizontal)
                     
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
+                        HStack(alignment: .top) {
                             ForEach(cast, id: \.id) { actor in
-                                VStack {
+                                VStack(spacing: 2) {
                                     AsyncImage(url: URL(string: actor.profilePath)) { image in
                                         image.resizable()
                                              .aspectRatio(contentMode: .fill)
                                              .frame(width: 65, height: 65)
                                              .clipShape(Circle())
                                     } placeholder: {
-                                        Color.gray
+                                        Circle()
+                                            .fill(Color.gray.opacity(0.5))
+                                            .frame(width: 65, height: 65)
+                                                    
                                     }
                                     
                                     Text(actor.originalName)
-                                        .font(.caption)
                                         .frame(width: 65)
-                                }
+                                        .lineLimit(3)
+                                        .font(.labelMedium)
+                                    
+                                }.padding(0)
                             }
-                        }
+                        }.padding(.horizontal)
                     }
-                }
+                }.padding(.top)
             }
         }
     }
@@ -186,7 +193,7 @@ struct MovieDetailsContent: View {
     private var categoriesSection: some View {
         Group {
             if let genres = uiState.details?.genres, !genres.isEmpty {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading,spacing: 6) {
                     Text("Categories")
                         .font(.headline)
                         .padding(.horizontal)
@@ -195,6 +202,7 @@ struct MovieDetailsContent: View {
                         HStack {
                             ForEach(genres, id: \.id) { genre in
                                 Text(genre.name)
+                                    .font(.labelSmall)
                                     .padding(8)
                                     .background(Color.gray.opacity(0.2))
                                     .cornerRadius(16)
@@ -209,19 +217,12 @@ struct MovieDetailsContent: View {
     private var recommendationsSection: some View {
         Group {
             if let recommendations = uiState.details?.recommendations, !recommendations.isEmpty {
-                VStack(alignment: .leading) {
-                    Text("Recommendations")
-                        .font(.headline)
-                        .padding()
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            ForEach(recommendations, id: \.id) { movie in
-                                // MovieItem view would be implemented separately
-                                Text(movie.title)
-                            }
-                        }
-                    }
+                
+                MoviesSection(
+                    title: "Recommendations",
+                    movies: recommendations
+                ){ model in
+                    onEvent(.movieDetails(model: model))
                 }
             }
         }
@@ -244,7 +245,7 @@ struct VoteAverageView: View {
                         .rotationEffect(.degrees(-90))
                     
                     Text("\(Int(progress * 10))%")
-                        .font(.caption)
+                        .font(.bodyMedium)
                         .fontWeight(.bold)
                 }
                 .frame(width: 60, height: 60)
@@ -256,21 +257,91 @@ struct VoteAverageView: View {
 enum MovieDetailsEvent {
     case navigateUp
     case onToggleFavorite
-    case movieDetails(model: MovieModel, type: String)
+    case movieDetails(model: MovieDetails)
 }
 
 
 #Preview{
-    MovieDetailsView(
+    MovieDetailsContent(
         
         args: MovieDetails(
             id: 1, 
-            name: "Name",
+            name: "The Lord of the Rings : The War",
             posterPath: ""
+        ),
+        uiState: MovieDetailsUIState(
+            details: movieDetailsPreview
+        
         ),
         onEvent: { MovieDetailsEvent in
             
-        },
-        viewModel: MovieDetailsViewModel()
+        }
     )
 }
+
+let movieDetailsPreview = MovieDetailsModel(
+    adult: false,
+    backdropPath: "/jlWk4J1sV1EHgkjhvsN7EdzGvOx.jpg",
+    budget: 17500000,
+    genres: [
+        GenreModel(
+            id: 1,
+            name: "Action"
+        ),
+        GenreModel(
+            id: 2,
+            name: "Adventure"
+        ),
+        GenreModel(
+            id: 3,
+            name: "Animation"
+        ),
+        GenreModel(
+            id: 4,
+            name: "Comedy"
+        )
+    ],
+    homepage: "https://www.the-match-factory.com/catalogue/films/the-substance.html",
+    id: 933260,
+    imdbId: "",
+    originalLanguage: "",
+    originalTitle: "The Substance",
+    overview: "A fading celebrity decides to use a black market drug, a cell-replicating substance that temporarily creates a younger, better version of herself.",
+    popularity: 4536.856,
+    posterPath: "/lqoMzCcZYEFK729d6qzt349fB4o.jpg",
+    releaseDate: "2024-09-07",
+    revenue: 29106531,
+    runtime: 141,
+    status: "",
+    tagline: "If you follow the instructions, what could go wrong?",
+    title: "The Substance",
+    video: true,
+    voteAverage: 5.4,
+    voteCount: 568,
+    cast: [
+        CastModel(
+            castId: 1,
+            id: 1,
+            originalName: "User A",
+            profilePath: ""
+        ),
+        CastModel(
+            castId: 2,
+            id: 2,
+            originalName: "User B",
+            profilePath: ""
+        ),
+        CastModel(
+            castId: 3,
+            id: 3,
+            originalName: "User C",
+            profilePath: ""
+        ),
+        CastModel(
+            castId: 4,
+            id: 4,
+            originalName: "User D",
+            profilePath: ""
+        )
+    ]
+)
