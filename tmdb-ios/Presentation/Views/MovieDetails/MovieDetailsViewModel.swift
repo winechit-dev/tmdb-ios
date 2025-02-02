@@ -14,6 +14,10 @@ class MovieDetailsViewModel: ObservableObject {
     
     private let repository: MovieRepository = MovieRepository()
     
+    init(movieId: Int){
+        getDetails(movieId: movieId)
+    }
+    
     func getDetails(movieId:Int) {
         Task { @MainActor in
             do {

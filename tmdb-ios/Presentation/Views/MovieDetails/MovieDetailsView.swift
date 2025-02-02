@@ -16,21 +16,12 @@ struct MovieDetails: Identifiable {
 
 struct MovieDetailsView: View {
     let args: MovieDetails
-    let onEvent: (MovieDetailsEvent) -> Void
     @ObservedObject var viewModel: MovieDetailsViewModel
-    
     
     var body: some View {
         MovieDetailsContent(
             args: args,
-            uiState: viewModel.uiState,
-            onEvent: { event in
-                switch event {
-                //case .onToggleFavorite: viewModel.onToggleFavorite()
-                default:
-                    onEvent(event)
-                }
-            }
+            uiState: viewModel.uiState
         )
     }
 }
@@ -38,7 +29,7 @@ struct MovieDetailsView: View {
 struct MovieDetailsContent: View {
     let args: MovieDetails
     let uiState: MovieDetailsUIState
-    let onEvent: (MovieDetailsEvent) -> Void
+
     
     var body: some View {
         ScrollView {
@@ -53,30 +44,8 @@ struct MovieDetailsContent: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top,350)
-               
             }
         }
-        .navigationBarBackButtonHidden(true)
-        .navigationBarItems(
-            leading: backButton,
-            trailing: favoriteButton
-        )
-    }
-    
-    private var backButton: some View {
-        Button(action: { onEvent(.navigateUp) }) {
-            Image(systemName: "chevron.left")
-        }
-    }
-    
-    private var favoriteButton: some View {
-        Button(action: {
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-            onEvent(.onToggleFavorite)
-        }) {
-            Image(systemName: uiState.favorite ? "heart.fill" : "heart")
-        }
-        .disabled(uiState.details == nil)
     }
     
     private var posterSection : some View{
@@ -85,12 +54,13 @@ struct MovieDetailsContent: View {
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
+                    .cornerRadius(8)
                     .frame(maxWidth: .infinity)
                 
             } placeholder: {
                 Color.gray.opacity(0.5)
             }
-            .padding(0)
+            .padding(10)
             .overlay {
                 LinearGradient(
                     gradient: Gradient(
@@ -221,9 +191,7 @@ struct MovieDetailsContent: View {
                 MoviesSection(
                     title: "Recommendations",
                     movies: recommendations
-                ){ model in
-                    onEvent(.movieDetails(model: model))
-                }
+                )
             }
         }
     }
@@ -263,7 +231,6 @@ enum MovieDetailsEvent {
 
 #Preview{
     MovieDetailsContent(
-        
         args: MovieDetails(
             id: 1, 
             name: "The Lord of the Rings : The War",
@@ -271,11 +238,7 @@ enum MovieDetailsEvent {
         ),
         uiState: MovieDetailsUIState(
             details: movieDetailsPreview
-        
-        ),
-        onEvent: { MovieDetailsEvent in
-            
-        }
+        )
     )
 }
 
