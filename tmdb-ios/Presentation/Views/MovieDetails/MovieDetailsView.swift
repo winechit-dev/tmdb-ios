@@ -17,6 +17,7 @@ struct MovieDetails: Identifiable {
 
 struct MovieDetailsView: View {
     let args: MovieDetails
+   
     @ObservedObject var viewModel: MovieDetailsViewModel
     
     var body: some View {
@@ -32,7 +33,8 @@ struct MovieDetailsContent: View {
     let uiState: MovieDetailsUIState
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) private var dismiss
-
+    @Query var favourites: [FavoriteMovie]
+    
     
     var body: some View {
         ScrollView {
@@ -55,44 +57,50 @@ struct MovieDetailsContent: View {
         .edgesIgnoringSafeArea(.top)
     }
     
-    private var toolbarSection : some View{
+    
+    private var toolbarSection: some View {
         HStack {
-            Button(action: {
-                dismiss()
-            }) {
-                Image(systemName: "chevron.left")
-                    .foregroundColor(.black)
-                    .padding(12)
-                    .background(
-                        Circle()
-                            .fill(.white.opacity(0.5))
-                    )
-            }
-            
+            backButton
             Spacer()
-            
-            Button(action: {
-               
-                modelContext.insert(
-                    FavoriteMovie(
-                        movieId: args.id,
-                        posterPath: args.posterPath,
-                        originalTitle: args.name
-                    )
-                )
-            }) {
-                Image(systemName: "heart")
-                    .foregroundColor(.black)
-                    .padding(12)
-                    .background(
-                        Circle()
-                            .fill(.white.opacity(0.5))
-                    )
-            }
+            favoriteButton
         }
         .padding(.horizontal)
         .padding(.top, 60)
     }
+
+    private var backButton: some View {
+        Button(action: { dismiss() }) {
+            Image(systemName: "chevron.left")
+                .foregroundColor(.black)
+                .padding(12)
+                .background(Circle().fill(.white.opacity(0.5)))
+        }
+    }
+
+    private var favoriteButton: some View {
+        let isFavourite = favourites.contains { $0.movieId == args.id }
+        
+        return Button(action: toggleFavorite) {
+            Image(systemName: isFavourite ? "heart.fill" : "heart")
+                .foregroundColor(.black)
+                .padding(12)
+                .background(Circle().fill(.white.opacity(0.5)))
+        }
+    }
+
+    private func toggleFavorite() {
+        if let existingMovie = favourites.first(where: { $0.movieId == args.id }) {
+            modelContext.delete(existingMovie)
+        } else {
+            let newFavorite = FavoriteMovie(
+                movieId: args.id,
+                posterPath: args.posterPath,
+                originalTitle: args.name
+            )
+            modelContext.insert(newFavorite)
+        }
+    }
+
     private var posterSection : some View{
         ZStack(alignment: .bottom) {
             AsyncImage(url: URL(string: args.posterPath)) { image in

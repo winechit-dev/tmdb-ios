@@ -10,7 +10,6 @@ import SwiftData
 
 @Model
 class FavoriteMovie{
-    var id: UUID = UUID()
     var movieId: Int
     var posterPath : String
     var originalTitle : String
