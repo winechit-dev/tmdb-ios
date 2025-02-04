@@ -2,6 +2,9 @@
 
 A native iOS application that allows users to browse and discover movies using The Movie Database (TMDB) API. The app follows clean architecture principles with a clear separation of concerns.
 
+![TMDB Cover](https://raw.githubusercontent.com/winechit-dev/tmdb-ios/refs/heads/main/TMDB%20iOS%20App.webp)
+
+
 ## Project Structure
 
 ### 📱 Data Layer
