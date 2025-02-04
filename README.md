@@ -79,3 +79,11 @@ The project follows a clean architecture approach with three main layers:
 - **Data Layer**: Handles external data sources and API communication
 - **Domain Layer**: Contains business logic and models
 - **Presentation Layer**: Manages UI and user interactions using MVVM pattern
+
+## Configuration
+- **API Key**: Obtain an API key from TMDB and configure it in the project.
+
+## Contributing
+- **Fork the Repository**: Create a personal fork of the repository.
+- **Create a Branch**: Create a new branch for your feature or bugfix.
+- **Submit a Pull Request**: Submit a pull request with a detailed description of your changes.
