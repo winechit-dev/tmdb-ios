@@ -27,7 +27,7 @@ struct FavouriteMoviesContent : View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading){
-                Text("Favourites").font(.headlineMedium).padding(.horizontal)
+               // Text("Favourites").font(.headlineMedium).padding(.horizontal)
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 15) {
                         ForEach(list, id: \.movieId) { movie in
@@ -51,7 +51,7 @@ struct FavouriteMoviesContent : View {
                     }
                     .padding()
                 }
-            }
+            }.navigationBarTitle("Favourites")
         }
     }
 }

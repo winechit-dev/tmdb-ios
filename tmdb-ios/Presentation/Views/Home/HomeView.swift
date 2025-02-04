@@ -10,65 +10,71 @@ import Kingfisher
 
 struct HomeView : View{
     @StateObject var viewModel : HomeViewModel = .init()
+    @State private var searchText: String = ""
     
     var body : some View{
         NavigationView {
             VStack(alignment: .leading){
-                headerSection
+                //headerSection
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 0){
                         
                         MoviesSection(
                             title: "Today Trending",
-                            movies: viewModel.trendingTodayMovies
+                            movies: viewModel.uiState.trendingTodayMovies
                         )
                         
                         MoviesSection(
                             title: "Popular",
-                            movies: viewModel.popularMovies
+                            movies: viewModel.uiState.popularMovies
+                            
                         )
                         
                         MoviesSection(
                             title: "Upcoming",
-                            movies: viewModel.upcomingMovies
+                            movies: viewModel.uiState.upcomingMovies
                         )
                         
                         MoviesSection(
                             title: "Now Playing",
-                            movies: viewModel.nowPlayingMovies
+                            movies: viewModel.uiState.nowPlayingMovies
                         )
                         
                         MoviesSection(
                             title: "Top Rated",
-                            movies: viewModel.topRatedMovies
+                            movies: viewModel.uiState.topRatedMovies
                         )
                         
                         Spacer()
                     }
                 }
-            }.alert("Error", isPresented: .constant(!viewModel.errorMessage.isEmpty), actions: {
-                Button {
-                    
-                } label: {
-                    Text("Ok")
+            }
+            .navigationBarTitle("Movies")
+            .searchable(text: $searchText)
+            .onChange(of: searchText) { oldValue, newValue in
+                viewModel.searchMovies(searchText: newValue)
+            }
+            .alert(
+                "Error",
+                isPresented: Binding(
+                     get: { !viewModel.uiState.errorMessage.isEmpty },
+                     set: { _ in viewModel.uiState.errorMessage = "" }
+                )) {
+                    Button("OK", role: .cancel) {}
+                } message: {
+                    Text(viewModel.uiState.errorMessage)
                 }
-                
-            }, message: {
-                Text(viewModel.errorMessage)
-            })
         }
-        
     }
-    
+
     var headerSection : some View{
         VStack(alignment: .leading, spacing: 6){
+         
             Text("Welcome")
                 .font(.headlineMedium)
-               
             Text("Millions of movies, TV shows and people to discover. Explore now.")
                 .font(.titleSmall)
                 
-            
         }.padding(.horizontal)
     }
 }
@@ -79,45 +85,46 @@ struct MoviesSection: View {
     let movies: [MovieModel]
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.titleMedium)
-                .bold()
-                .padding(.leading)
-                .padding(.bottom,6)
-            
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    ForEach(movies) { movie in
-                        NavigationLink(
-                            destination:createDetailView(
-                                for: MovieDetails(
-                                    id: movie.id,
-                                    name: movie.originalTitle,
-                                    posterPath: movie.posterPath
+        if !movies.isEmpty {
+            VStack(alignment: .leading) {
+                Text(title)
+                    .font(.titleMedium)
+                    .bold()
+                    .padding(.leading)
+                    .padding(.bottom,6)
+                
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(movies) { movie in
+                            NavigationLink(
+                                destination:createDetailView(
+                                    for: MovieDetails(
+                                        id: movie.id,
+                                        name: movie.originalTitle,
+                                        posterPath: movie.posterPath
+                                    )
                                 )
-                            )
-                        ) {
-                            VStack {
-                                KFImage(URL(string:movie.posterPath))
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 100, height: 150)
-                                    .cornerRadius(8)
-                                    .clipped()
+                            ) {
+                                VStack {
+                                    KFImage(URL(string:movie.posterPath))
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 100, height: 150)
+                                        .cornerRadius(8)
+                                        .clipped()
+                                }
+                                .padding(.vertical, 0)
                             }
-                            .padding(.vertical, 0)
                         }
                     }
-                }
-                .padding(.horizontal)
-                
-            }.padding(.horizontal,0)
+                    .padding(.horizontal)
+                    
+                }.padding(.horizontal,0)
+            }
+            .padding(.vertical, 16)
         }
-        .padding(.vertical, 16)
     }
-    
 }
 
 @ViewBuilder

@@ -8,12 +8,8 @@
 import Foundation
 
 class HomeViewModel: ObservableObject {
-    @Published var errorMessage: String = ""
-    @Published var trendingTodayMovies: [MovieModel] = []
-    @Published var popularMovies: [MovieModel] = []
-    @Published var upcomingMovies: [MovieModel] = []
-    @Published var nowPlayingMovies: [MovieModel] = []
-    @Published var topRatedMovies: [MovieModel] = []
+    @Published var uiState = HomeUIState()
+    private var oldUiState = HomeUIState()
     
     private let repository: MovieRepository = MovieRepository()
     
@@ -44,7 +40,7 @@ class HomeViewModel: ObservableObject {
             let response = try await fetchMovieData(for: type)
             updateMovieList(type: type, movies: response)
         } catch {
-            errorMessage = error.localizedDescription
+            uiState.errorMessage = error.localizedDescription
         }
     }
     
@@ -60,11 +56,40 @@ class HomeViewModel: ObservableObject {
     
     private func updateMovieList(type: MovieType, movies: [MovieModel]) {
         switch type {
-        case .trendingToday: trendingTodayMovies = movies
-        case .popular: popularMovies = movies
-        case .upcoming: upcomingMovies = movies
-        case .topRated: topRatedMovies = movies
-        case .nowPlaying: nowPlayingMovies = movies
+        case .trendingToday: uiState.trendingTodayMovies = movies
+        case .popular: uiState.popularMovies = movies
+        case .upcoming: uiState.upcomingMovies = movies
+        case .topRated: uiState.topRatedMovies = movies
+        case .nowPlaying: uiState.nowPlayingMovies = movies
         }
+        oldUiState = uiState
     }
+    
+    func searchMovies(searchText: String) {
+        guard !searchText.isEmpty else {
+            uiState = oldUiState
+            return
+        }
+        uiState.trendingTodayMovies = filterMovies(uiState.trendingTodayMovies,searchText: searchText)
+        uiState.popularMovies = filterMovies(uiState.popularMovies,searchText: searchText)
+        uiState.upcomingMovies = filterMovies(uiState.upcomingMovies,searchText: searchText)
+        uiState.nowPlayingMovies = filterMovies(uiState.nowPlayingMovies,searchText: searchText)
+        uiState.topRatedMovies = filterMovies(uiState.topRatedMovies,searchText: searchText)
+    }
+    
+    private func filterMovies(_ movies: [MovieModel],searchText: String) -> [MovieModel] {
+           guard !searchText.isEmpty else { return movies }
+           return movies.filter { movie in
+               movie.title.localizedCaseInsensitiveContains(searchText)
+           }
+    }
+}
+
+struct HomeUIState {
+    var errorMessage: String = ""
+    var trendingTodayMovies: [MovieModel] = []
+    var popularMovies: [MovieModel] = []
+    var upcomingMovies: [MovieModel] = []
+    var nowPlayingMovies: [MovieModel] = []
+    var topRatedMovies: [MovieModel] = []
 }
