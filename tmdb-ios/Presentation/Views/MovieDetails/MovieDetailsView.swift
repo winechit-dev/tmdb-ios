@@ -236,11 +236,13 @@ struct MovieDetailsContent: View {
     }
     
     private var recommendationsSection: some View {
+    
         Group {
             if let recommendations = uiState.details?.recommendations, !recommendations.isEmpty {
                 
                 MoviesSection(
                     title: "Recommendations",
+                    type: .nowPlaying,
                     movies: recommendations
                 )
             }

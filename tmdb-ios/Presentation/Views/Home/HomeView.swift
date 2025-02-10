@@ -21,27 +21,32 @@ struct HomeView : View{
                         
                         MoviesSection(
                             title: "Today Trending",
+                            type: .trendingToday,
                             movies: viewModel.uiState.trendingTodayMovies
                         )
                         
                         MoviesSection(
                             title: "Popular",
+                            type: .popular,
                             movies: viewModel.uiState.popularMovies
                             
                         )
                         
                         MoviesSection(
                             title: "Upcoming",
+                            type: .upcoming,
                             movies: viewModel.uiState.upcomingMovies
                         )
                         
                         MoviesSection(
                             title: "Now Playing",
+                            type: .nowPlaying,
                             movies: viewModel.uiState.nowPlayingMovies
                         )
                         
                         MoviesSection(
                             title: "Top Rated",
+                            type: .topRated,
                             movies: viewModel.uiState.topRatedMovies
                         )
                         
@@ -82,17 +87,29 @@ struct HomeView : View{
 
 struct MoviesSection: View {
     let title: String
+    let type : MovieType
     let movies: [MovieModel]
     
     var body: some View {
         if !movies.isEmpty {
             VStack(alignment: .leading) {
-                Text(title)
-                    .font(.titleMedium)
-                    .bold()
-                    .padding(.leading)
-                    .padding(.bottom,6)
                 
+                HStack(alignment: .center){
+                    Text(title)
+                        .font(.titleMedium)
+                        .bold()
+                        .padding(.leading)
+                        .padding(.bottom,6)
+                    Spacer()
+                    NavigationLink(
+                        destination:MovieListView(title: title, viewModel: MovieListViewModel.init(type: type))
+                    ){
+                        Text("See More")
+                            .font(.bodyMedium)
+                            .padding(.trailing)
+                    }
+                    
+                }
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {
