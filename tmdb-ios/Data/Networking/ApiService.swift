@@ -6,19 +6,21 @@
 //
 
 import Foundation
+import KeychainSwift
 
 enum AppError: Error {
     case invalidURL
 }
 
 struct ApiService {
-    let apiKey = "431684f2f57b4a3f0d520afae0ee6a4f"
+    let keychain = KeychainSwift()
     let language = "en-US"
     let baseUrl = "https://api.themoviedb.org/3"
     private let session: URLSession
     
     init(session: URLSession = .shared) {
         self.session = session
+        keychain.set("431684f2f57b4a3f0d520afae0ee6a4f", forKey: "apiKey")
     }
     
     func postRequest<T: Decodable>(type: T.Type, urlString: String, request: Encodable) async throws -> T {
@@ -35,6 +37,7 @@ struct ApiService {
     }
     
     func getData<T: Decodable>(type: T.Type, endpoint: String) async throws -> T {
+        let apiKey = keychain.get("apiKey") ?? ""
         let fullURLString = "\(baseUrl)\(endpoint)?api_key=\(apiKey)&language=\(language)&page=1"
 
         guard let url = URL(string: fullURLString) else {
@@ -50,6 +53,7 @@ struct ApiService {
     }
     
     func getCredits<T: Decodable>(type: T.Type, endpoint: String) async throws -> T {
+        let apiKey = keychain.get("apiKey") ?? ""
         let fullURLString = "\(baseUrl)\(endpoint)?api_key=\(apiKey)"
 
         guard let url = URL(string: fullURLString) else {
