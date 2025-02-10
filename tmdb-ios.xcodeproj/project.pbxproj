@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		64B3420F2D4924E20025A14E /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 64B3420E2D4924E20025A14E /* Kingfisher */; };
 		64B343862D5A50060025A14E /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 64B343852D5A50060025A14E /* KeychainSwift */; };
+		64B343892D5A5FBD0025A14E /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 64B343882D5A5FBD0025A14E /* Shimmer */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64B343892D5A5FBD0025A14E /* Shimmer in Frameworks */,
 				64B343862D5A50060025A14E /* KeychainSwift in Frameworks */,
 				64B3420F2D4924E20025A14E /* Kingfisher in Frameworks */,
 			);
@@ -87,6 +89,7 @@
 			packageProductDependencies = (
 				64B3420E2D4924E20025A14E /* Kingfisher */,
 				64B343852D5A50060025A14E /* KeychainSwift */,
+				64B343882D5A5FBD0025A14E /* Shimmer */,
 			);
 			productName = "tmdb-ios";
 			productReference = 64B341702D4609D50025A14E /* tmdb-ios.app */;
@@ -119,6 +122,7 @@
 			packageReferences = (
 				64B3420D2D4924E20025A14E /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				64B343842D5A50060025A14E /* XCRemoteSwiftPackageReference "keychain-swift" */,
+				64B343872D5A5FBD0025A14E /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 64B341712D4609D50025A14E /* Products */;
@@ -389,6 +393,14 @@
 				minimumVersion = 24.0.0;
 			};
 		};
+		64B343872D5A5FBD0025A14E /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/markiv/SwiftUI-Shimmer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -401,6 +413,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 64B343842D5A50060025A14E /* XCRemoteSwiftPackageReference "keychain-swift" */;
 			productName = KeychainSwift;
+		};
+		64B343882D5A5FBD0025A14E /* Shimmer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 64B343872D5A5FBD0025A14E /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;
+			productName = Shimmer;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

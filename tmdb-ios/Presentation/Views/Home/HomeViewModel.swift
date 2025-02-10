@@ -28,6 +28,7 @@ class HomeViewModel: ObservableObject {
             group.addTask { await self.fetchMovies(type: .topRated) }
             group.addTask { await self.fetchMovies(type: .nowPlaying) }
         }
+        uiState.isLoading = false
     }
     
     @MainActor
@@ -86,6 +87,7 @@ enum MovieType {
 }
 
 struct HomeUIState {
+    var isLoading : Bool = true
     var errorMessage: String = ""
     var trendingTodayMovies: [MovieModel] = []
     var popularMovies: [MovieModel] = []

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Kingfisher
+import Shimmer
 
 struct HomeView : View{
     @StateObject var viewModel : HomeViewModel = .init()
@@ -17,40 +18,44 @@ struct HomeView : View{
             VStack(alignment: .leading){
                 //headerSection
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 0){
-                        
-                        MoviesSection(
-                            title: "Today Trending",
-                            type: .trendingToday,
-                            movies: viewModel.uiState.trendingTodayMovies
-                        )
-                        
-                        MoviesSection(
-                            title: "Popular",
-                            type: .popular,
-                            movies: viewModel.uiState.popularMovies
+                    if viewModel.uiState.isLoading {
+                        ShimmerView()
+                    } else {
+                        VStack(alignment: .leading, spacing: 0){
                             
-                        )
-                        
-                        MoviesSection(
-                            title: "Upcoming",
-                            type: .upcoming,
-                            movies: viewModel.uiState.upcomingMovies
-                        )
-                        
-                        MoviesSection(
-                            title: "Now Playing",
-                            type: .nowPlaying,
-                            movies: viewModel.uiState.nowPlayingMovies
-                        )
-                        
-                        MoviesSection(
-                            title: "Top Rated",
-                            type: .topRated,
-                            movies: viewModel.uiState.topRatedMovies
-                        )
-                        
-                        Spacer()
+                            MoviesSection(
+                                title: "Today Trending",
+                                type: .trendingToday,
+                                movies: viewModel.uiState.trendingTodayMovies
+                            )
+                            
+                            MoviesSection(
+                                title: "Popular",
+                                type: .popular,
+                                movies: viewModel.uiState.popularMovies
+                                
+                            )
+                            
+                            MoviesSection(
+                                title: "Upcoming",
+                                type: .upcoming,
+                                movies: viewModel.uiState.upcomingMovies
+                            )
+                            
+                            MoviesSection(
+                                title: "Now Playing",
+                                type: .nowPlaying,
+                                movies: viewModel.uiState.nowPlayingMovies
+                            )
+                            
+                            MoviesSection(
+                                title: "Top Rated",
+                                type: .topRated,
+                                movies: viewModel.uiState.topRatedMovies
+                            )
+                            
+                            Spacer()
+                        }
                     }
                 }
             }
@@ -150,6 +155,45 @@ func createDetailView(for movie: MovieDetails) -> some View {
         args: movie,
         viewModel:MovieDetailsViewModel(movieId: movie.id)
     )
+}
+
+struct ShimmerView: View {
+    @State private var isLoading = true
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            ForEach(0..<5, id: \.self) { _ in
+                VStack(alignment: .leading) {
+                   
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 100, height: 20)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                    
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(0..<5, id: \.self) { _ in
+                                VStack {
+                                    Rectangle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(width: 120, height: 180)
+                                        .cornerRadius(10)
+                                    
+                                }
+                                .padding(.trailing, 10)
+                            }
+                        } .padding(.horizontal)
+                    }
+                }
+               
+                .padding(.bottom, 20)
+            }
+        }
+        .redacted(reason: .placeholder)
+        .modifier(Shimmer())
+    }
 }
 
 #Preview {
