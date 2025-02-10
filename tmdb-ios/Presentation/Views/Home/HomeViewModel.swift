@@ -30,10 +30,6 @@ class HomeViewModel: ObservableObject {
         }
     }
     
-    enum MovieType {
-        case trendingToday, popular, upcoming, topRated, nowPlaying
-    }
-    
     @MainActor
     private func fetchMovies(type: MovieType) async {
         do {
@@ -83,6 +79,10 @@ class HomeViewModel: ObservableObject {
                movie.title.localizedCaseInsensitiveContains(searchText)
            }
     }
+}
+
+enum MovieType {
+    case trendingToday, popular, upcoming, topRated, nowPlaying
 }
 
 struct HomeUIState {
